@@ -254,7 +254,11 @@ func (mw *MagickWand) GetType() ImageType {
 func (mw *MagickWand) ProfileImage(name string, profile []byte) error {
 	csname := C.CString(name)
 	defer C.free(unsafe.Pointer(csname))
-	C.MagickProfileImage(mw.mw, csname, unsafe.Pointer(&profile[0]), C.size_t(len(profile)))
+	if profile == nil {
+		C.MagickProfileImage(mw.mw, csname, unsafe.Pointer(nil), C.size_t(0))
+	} else {
+		C.MagickProfileImage(mw.mw, csname, unsafe.Pointer(&profile[0]), C.size_t(len(profile)))
+	}
 	return mw.GetLastError()
 }
 
